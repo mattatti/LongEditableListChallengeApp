@@ -1,0 +1,12 @@
+.pageRoot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 30px;
+}
+
+.chartContainer {
+  height: 50vh;
+  width: 60vw;
+  padding: 50px;
+}
