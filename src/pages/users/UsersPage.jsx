@@ -6,8 +6,8 @@ import styles from './users.module.css';
 import UsersList from './usersList/UsersList';
 
 function UsersPage() {
-  const { updateUserData } = useUsersContext();
-  const [editedUsers, setEditedUsers] = useState([]);
+  const { updateUserData, usersData } = useUsersContext();
+  const [editedUsers, setEditedUsers] = useState(usersData);
   const [errorCounts, setErrorCounts] = useState({
     emptyCount: 0,
     invalidCount: 0,
@@ -16,7 +16,7 @@ function UsersPage() {
 
   // Handle save button click to update the users in context
   const handleSave = () => {
-    updateUserData(editedUsers); // Updates users in the context
+    updateUserData(editedUsers);
   };
 
   // Determine if the save button should be disabled
@@ -26,7 +26,11 @@ function UsersPage() {
   return (
     <div className={styles.pageRoot}>
       <div className={styles.pageContentContainer}>
-        <UsersList onSave={setEditedUsers} onErrorCountChange={setErrorCounts} />
+        <UsersList
+          setEditedUsers={setEditedUsers}
+          editedUsers={editedUsers}
+          onErrorCountChange={setErrorCounts}
+        />
         <ErrorPanel
           emptyCount={errorCounts.emptyCount}
           invalidCount={errorCounts.invalidCount}

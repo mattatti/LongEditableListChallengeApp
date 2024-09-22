@@ -10,9 +10,8 @@ import styles from '../users.module.css';
 
 const USERS_PER_PAGE = 7; // Number of users to display per page
 
-function UsersList({ onErrorCountChange }) {
+function UsersList({ onErrorCountChange, editedUsers, setEditedUsers }) {
   const { usersData } = useUsersContext();
-  const [editedUsers, setEditedUsers] = useState(usersData);
   const [touchedFields, setTouchedFields] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
