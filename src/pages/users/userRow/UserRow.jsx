@@ -1,3 +1,4 @@
+import { useState, useCallback } from 'react';
 import { Grid } from '@mui/material';
 import InputField from '../../../components/InputField';
 import TrashIconButton from '../../../components/TrashIconButton';
@@ -6,6 +7,7 @@ import TextField from '@mui/material/TextField';
 import countryOptions from '../../../data/countries.json';
 import styles from '../users.module.css';
 import { styled } from '@mui/material/styles';
+import debounce from 'lodash.debounce'; // Import debounce
 
 const StyledAutocomplete = styled(Autocomplete)({
   boxShadow: 'none',
@@ -19,21 +21,53 @@ const StyledAutocomplete = styled(Autocomplete)({
 });
 
 const UserRow = ({ user, onDelete, onChange, touchedFields }) => {
+  const [nameInput, setNameInput] = useState(user.name);
+  const [countryInput, setCountryInput] = useState(user.country);
+  const [emailInput, setEmailInput] = useState(user.email);
+  const [phoneInput, setPhoneInput] = useState(user.phone);
+
   const validateName = (name) => /^[a-zA-ZÀ-ÿ\s]+$/.test(name);
   const validateCountry = (country) => countryOptions.includes(country);
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const validatePhone = (phone) => /^\+\d{8,}$/.test(phone);
 
   const isError = {
-    name: touchedFields.name && (user.name === '' || !validateName(user.name)),
+    name: touchedFields.name && (nameInput === '' || !validateName(nameInput)),
     country:
-      touchedFields.country && (user.country === '' || !validateCountry(user.country)),
-    email: touchedFields.email && (user.email === '' || !validateEmail(user.email)),
-    phone: touchedFields.phone && (user.phone === '' || !validatePhone(user.phone)),
+      touchedFields.country && (countryInput === '' || !validateCountry(countryInput)),
+    email: touchedFields.email && (emailInput === '' || !validateEmail(emailInput)),
+    phone: touchedFields.phone && (phoneInput === '' || !validatePhone(phoneInput)),
   };
 
+  // Debounced change handler
+  const debouncedHandleFieldChange = useCallback(
+    debounce((field, value) => {
+      onChange(user.id, field, value); // This will be called after 300ms of no typing
+    }, 300),
+    []
+  );
+
   const handleFieldChange = (field, value) => {
-    onChange(user.id, field, value);
+    // Update local state immediately so the input reflects the value
+    switch (field) {
+      case 'name':
+        setNameInput(value);
+        break;
+      case 'country':
+        setCountryInput(value);
+        break;
+      case 'email':
+        setEmailInput(value);
+        break;
+      case 'phone':
+        setPhoneInput(value);
+        break;
+      default:
+        break;
+    }
+
+    // Trigger the debounced function
+    debouncedHandleFieldChange(field, value);
   };
 
   return (
@@ -41,7 +75,7 @@ const UserRow = ({ user, onDelete, onChange, touchedFields }) => {
       <Grid item xs={2}>
         <InputField
           name="name"
-          value={user.name}
+          value={nameInput}
           error={isError.name}
           placeholder="Name"
           onChange={(name, value) => handleFieldChange(name, value)}
@@ -50,7 +84,7 @@ const UserRow = ({ user, onDelete, onChange, touchedFields }) => {
       <Grid item xs={3}>
         <StyledAutocomplete
           options={countryOptions}
-          value={user.country || null}
+          value={countryInput || null}
           onChange={(event, newValue) => handleFieldChange('country', newValue)}
           renderInput={(params) => (
             <TextField
@@ -66,7 +100,7 @@ const UserRow = ({ user, onDelete, onChange, touchedFields }) => {
       <Grid item xs={3}>
         <InputField
           name="email"
-          value={user.email}
+          value={emailInput}
           error={isError.email}
           placeholder="Email"
           onChange={(name, value) => handleFieldChange(name, value)}
@@ -75,7 +109,7 @@ const UserRow = ({ user, onDelete, onChange, touchedFields }) => {
       <Grid item xs={2}>
         <InputField
           name="phone"
-          value={user.phone}
+          value={phoneInput}
           error={isError.phone}
           placeholder="Phone"
           onChange={(name, value) => handleFieldChange(name, value)}

@@ -97,7 +97,7 @@ You can choose any other state management solution you prefer instead of the bui
 - The suggested design and Look&Feel (mock) are also optional. You can follow it or design your own.
 - If there are any other changes or optimizations that you think are in place and it wasn't mentioned here, we would be glad for you to mention and explain 🤩
 
-### Things to improve
+### Things to improve/implement
 
 - better response in typing
 - add loaders and suspenses where needed
@@ -106,4 +106,5 @@ You can choose any other state management solution you prefer instead of the bui
 - pagination to improve table performance
 - inrcease the width of a field and maybe make the entire table responsive
 - the save button is almost invisible when disabled
+- decrease the times the app re-renders. also decrease the assignment to editedusers and try to directly assign changes to users data
 - deploy to web

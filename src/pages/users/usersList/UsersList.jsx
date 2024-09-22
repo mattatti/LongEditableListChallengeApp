@@ -1,17 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useUsersContext } from '../../../context/usersContext';
 import UserRow from '../userRow/UserRow';
 import styles from '../users.module.css';
-import { Typography } from '@mui/material';
+import { Typography, Button, Grid } from '@mui/material';
 import AddButton from '../../../components/AddButton';
 import countryOptions from '../../../data/countries.json';
+
+const USERS_PER_PAGE = 7; // Number of users to display per page
 
 function UsersList({ onSave, onErrorCountChange }) {
   const { usersData } = useUsersContext();
   const [editedUsers, setEditedUsers] = useState(usersData);
   const [touchedFields, setTouchedFields] = useState({});
+  const [currentPage, setCurrentPage] = useState(1); // Page state
 
-  const handleRowChange = (userId, field, newValue) => {
+  const handleRowChange = useCallback((userId, field, newValue) => {
     setEditedUsers((prev) =>
       prev.map((user) => (user.id === userId ? { ...user, [field]: newValue } : user))
     );
@@ -23,51 +26,58 @@ function UsersList({ onSave, onErrorCountChange }) {
         [field]: true,
       },
     }));
-  };
+  }, []);
 
-  // Calculate error counts
-  const errorCounts = editedUsers.reduce(
-    (acc, user) => {
-      const isTouched = touchedFields[user.id] || {};
-      const hasEmpty =
-        (isTouched.name && user.name === '') ||
-        (isTouched.country && user.country === '') ||
-        (isTouched.email && user.email === '') ||
-        (isTouched.phone && user.phone === '');
+  const errorCounts = useMemo(() => {
+    return editedUsers.reduce(
+      (acc, user) => {
+        const isTouched = touchedFields[user.id] || {};
+        const hasEmpty =
+          (isTouched.name && user.name === '') ||
+          (isTouched.country && user.country === '') ||
+          (isTouched.email && user.email === '') ||
+          (isTouched.phone && user.phone === '');
 
-      const hasInvalid =
-        (isTouched.name && user.name !== '' && !/^[a-zA-ZÀ-ÿ\s]+$/.test(user.name)) ||
-        (isTouched.country &&
-          user.country !== '' &&
-          !countryOptions.includes(user.country)) ||
-        (isTouched.email &&
-          user.email !== '' &&
-          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email)) ||
-        (isTouched.phone && user.phone !== '' && !/^\+\d{8,}$/.test(user.phone));
+        const hasInvalid =
+          (isTouched.name && user.name !== '' && !/^[a-zA-ZÀ-ÿ\s]+$/.test(user.name)) ||
+          (isTouched.country &&
+            user.country !== '' &&
+            !countryOptions.includes(user.country)) ||
+          (isTouched.email &&
+            user.email !== '' &&
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email)) ||
+          (isTouched.phone && user.phone !== '' && !/^\+\d{8,}$/.test(user.phone));
 
-      if (hasEmpty) acc.emptyCount++;
-      if (hasInvalid) acc.invalidCount++;
+        if (hasEmpty) acc.emptyCount++;
+        if (hasInvalid) acc.invalidCount++;
 
-      return acc;
-    },
-    { emptyCount: 0, invalidCount: 0 }
-  );
+        return acc;
+      },
+      { emptyCount: 0, invalidCount: 0 }
+    );
+  }, [editedUsers, touchedFields]);
 
-  // Determine if any fields across all rows are empty
-  const overallEmptyFieldCount = editedUsers.filter(
-    (user) =>
-      user.name === '' || user.country === '' || user.email === '' || user.phone === ''
-  ).length;
-
-  // Sync initial data from context to local state
   useEffect(() => {
     setEditedUsers(usersData);
   }, [usersData]);
 
-  // Call the error count update on changes
   useEffect(() => {
-    onErrorCountChange({ ...errorCounts, overallEmptyFieldCount }); // Communicate the error counts
-  }, [editedUsers, touchedFields, errorCounts]);
+    const overallEmptyFieldCount = editedUsers.filter(
+      (user) =>
+        user.name === '' || user.country === '' || user.email === '' || user.phone === ''
+    ).length;
+
+    onErrorCountChange({ ...errorCounts, overallEmptyFieldCount });
+  }, [editedUsers, errorCounts]);
+
+  // Pagination: Calculate total pages
+  const totalPages = Math.ceil(editedUsers.length / USERS_PER_PAGE);
+
+  // Get users for the current page
+  const usersOnCurrentPage = editedUsers.slice(
+    (currentPage - 1) * USERS_PER_PAGE,
+    currentPage * USERS_PER_PAGE
+  );
 
   return (
     <div className={styles.usersList}>
@@ -82,8 +92,9 @@ function UsersList({ onSave, onErrorCountChange }) {
           }
         />
       </div>
+
       <div className={styles.usersListContent}>
-        {editedUsers.map((user) => (
+        {usersOnCurrentPage.map((user) => (
           <UserRow
             key={user.id}
             user={user}
@@ -96,6 +107,26 @@ function UsersList({ onSave, onErrorCountChange }) {
           />
         ))}
       </div>
+
+      {/* Pagination Controls */}
+      <div className={styles.paginationControls}>
+        <Button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage((prev) => prev - 1)}
+        >
+          Previous
+        </Button>
+        <Typography variant="body2">
+          Page {currentPage} of {totalPages}
+        </Typography>
+        <Button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage((prev) => prev + 1)}
+        >
+          Next
+        </Button>
+      </div>
+
       <div className={styles.errorCountContainer}>
         <Typography variant="body1">
           {`Errors: Empty Fields: ${errorCounts.emptyCount}, Invalid Fields: ${errorCounts.invalidCount}`}
