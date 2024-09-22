@@ -11,7 +11,7 @@ Chart.register(ArcElement, Tooltip, Legend); // Registered components
 function StatisticsPage() {
   const { usersData } = useUsersContext();
   const [chartData, setChartData] = useState({});
-  const [loading, setLoading] = useState(true); // Initialize loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (usersData.length > 0) {
@@ -50,18 +50,18 @@ function StatisticsPage() {
           },
         ],
       });
-      setLoading(false); // Set loading to false when data is available
+      setLoading(false);
     } else {
-      setLoading(false); // Set loading to false if no users are available
+      setLoading(false);
     }
   }, [usersData]);
 
   const options = {
     responsive: true,
-    maintainAspectRatio: false, // Allows for custom width and height
+    maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'left', // Adjust the position of the legend as needed
+        position: 'left',
         labels: {
           padding: 20,
         },
@@ -81,7 +81,7 @@ function StatisticsPage() {
           container
           justifyContent="center"
           alignItems="center"
-          style={{ height: '300px' }} // Set a fixed height for the loader
+          style={{ height: '70vh' }}
         >
           <CircularProgress />
         </Grid>
