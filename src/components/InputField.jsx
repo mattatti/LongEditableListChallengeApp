@@ -1,5 +1,5 @@
-import { styled } from '@mui/material/styles';
 import { TextField } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 const StyledTextField = styled(TextField)({
   boxShadow: 'none',
@@ -8,7 +8,15 @@ const StyledTextField = styled(TextField)({
   borderRadius: '4px',
 });
 
-const InputField = ({ name, value, onChange, error, disabled, placeholder }) => {
+const InputField = ({
+  name,
+  value,
+  onChange,
+  error,
+  disabled,
+  placeholder,
+  maxLength,
+}) => {
   return (
     <StyledTextField
       name={name}
@@ -22,6 +30,7 @@ const InputField = ({ name, value, onChange, error, disabled, placeholder }) => 
       fullWidth
       autoComplete="off"
       inputProps={{
+        maxLength,
         autoComplete: 'off',
       }}
     />

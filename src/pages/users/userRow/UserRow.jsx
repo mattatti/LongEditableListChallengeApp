@@ -1,5 +1,5 @@
 import { Grid, TextField } from '@mui/material';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import Autocomplete from '@mui/material/Autocomplete';
 import { styled } from '@mui/material/styles';
@@ -69,6 +69,36 @@ const UserRow = ({ user, onDelete, onChange, touchedFields }) => {
     debouncedHandleFieldChange(field, value);
   };
 
+  const autocompleteField = useMemo(
+    () => (
+      <StyledAutocomplete
+        options={countryOptions}
+        value={countryInput || null}
+        onChange={(event, newValue) => handleFieldChange('country', newValue)}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="outlined"
+            placeholder="Country"
+            error={isError.country}
+            inputProps={{
+              ...params.inputProps,
+              maxLength: 60,
+            }}
+            sx={{
+              '& .MuiInputBase-root': {
+                backgroundColor: '#909196',
+                borderRadius: '4px',
+              },
+            }}
+          />
+        )}
+        isOptionEqualToValue={(option, value) => option === value}
+      />
+    ),
+    [countryInput, isError.country]
+  );
+
   return (
     <Grid container className={styles.userRow} spacing={2}>
       <Grid item xs={2}>
@@ -77,43 +107,37 @@ const UserRow = ({ user, onDelete, onChange, touchedFields }) => {
           value={nameInput}
           error={isError.name}
           placeholder="Name"
+          maxLength={70}
           onChange={(name, value) => handleFieldChange(name, value)}
         />
       </Grid>
+
       <Grid item xs={3}>
-        <StyledAutocomplete
-          options={countryOptions}
-          value={countryInput || null}
-          onChange={(event, newValue) => handleFieldChange('country', newValue)}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="outlined"
-              placeholder="Country"
-              error={isError.country}
-            />
-          )}
-          isOptionEqualToValue={(option, value) => option === value}
-        />
+        {autocompleteField}
       </Grid>
+
       <Grid item xs={3}>
         <InputField
           name="email"
           value={emailInput}
           error={isError.email}
           placeholder="Email"
+          maxLength={254}
           onChange={(name, value) => handleFieldChange(name, value)}
         />
       </Grid>
+
       <Grid item xs={2}>
         <InputField
           name="phone"
           value={phoneInput}
           error={isError.phone}
           placeholder="Phone"
+          maxLength={15}
           onChange={(name, value) => handleFieldChange(name, value)}
         />
       </Grid>
+
       <Grid item xs={1}>
         <TrashIconButton handleClick={() => onDelete(user.id)} />
       </Grid>

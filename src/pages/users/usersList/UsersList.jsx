@@ -1,6 +1,6 @@
+import { CircularProgress, Grid, Typography } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Typography } from '@mui/material';
 import AddButton from '../../../components/AddButton';
 import PaginationControls from '../../../components/PaginationControls';
 import { useUsersContext } from '../../../context/usersContext';
@@ -14,7 +14,8 @@ function UsersList({ onErrorCountChange }) {
   const { usersData } = useUsersContext();
   const [editedUsers, setEditedUsers] = useState(usersData);
   const [touchedFields, setTouchedFields] = useState({});
-  const [currentPage, setCurrentPage] = useState(1); // Page state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   const handleRowChange = useCallback((userId, field, newValue) => {
     setEditedUsers((prev) =>
@@ -60,7 +61,12 @@ function UsersList({ onErrorCountChange }) {
   }, [editedUsers, touchedFields]);
 
   useEffect(() => {
-    setEditedUsers(usersData);
+    setLoading(true);
+
+    if (usersData.length > 0) {
+      setEditedUsers(usersData);
+      setLoading(false);
+    }
   }, [usersData]);
 
   useEffect(() => {
@@ -97,18 +103,29 @@ function UsersList({ onErrorCountChange }) {
       </div>
 
       <div className={styles.usersListContent}>
-        {usersOnCurrentPage.map((user) => (
-          <UserRow
-            key={user.id}
-            user={user}
-            onChange={handleRowChange}
-            onDelete={(userId) =>
-              setEditedUsers((prev) => prev.filter((u) => u.id !== userId))
-            }
-            touchedFields={touchedFields[user.id] || {}}
-            setTouchedFields={setTouchedFields}
-          />
-        ))}
+        {loading ? (
+          <Grid
+            container
+            justifyContent="center"
+            alignItems="center"
+            style={{ height: '100%' }}
+          >
+            <CircularProgress />
+          </Grid>
+        ) : (
+          usersOnCurrentPage.map((user) => (
+            <UserRow
+              key={user.id}
+              user={user}
+              onChange={handleRowChange}
+              onDelete={(userId) =>
+                setEditedUsers((prev) => prev.filter((u) => u.id !== userId))
+              }
+              touchedFields={touchedFields[user.id] || {}}
+              setTouchedFields={setTouchedFields}
+            />
+          ))
+        )}
       </div>
 
       <PaginationControls

@@ -6,7 +6,7 @@
 }
 
 .pageContentContainer {
-  width: 890px;
+  width: 100vw;
 
   display: flex;
   flex-direction: column;
@@ -61,7 +61,7 @@
   color: #856404;
   font-weight: bold;
   text-align: center;
-  width: 870px;
+  width: 95vw;
 }
 
 .paginationControls {

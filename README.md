@@ -101,10 +101,11 @@ You can choose any other state management solution you prefer instead of the bui
 
 - - better response in typing
 - add loaders and suspenses where needed
-- implement redux if needed
-- do not show error panel if there are no errors
-- pagination to improve table performance
-- inrcease the width of a field and maybe make the entire table responsive
-- the save button is almost invisible when disabled
-- decrease the times the app re-renders. also decrease the assignment to editedusers and try to directly assign changes to users data
+- - implement redux if needed
+- - do not show error panel if there are no errors
+- - pagination to improve table performance
+- - limit the characters allowed per input field
+- - inrcease the width of a field and maybe make the entire table responsive
+- - the save button is almost invisible when disabled
+
 - deploy to web

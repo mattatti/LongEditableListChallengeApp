@@ -1,7 +1,9 @@
+import { CircularProgress, Grid } from '@mui/material';
+import { ArcElement, Chart, Legend, Tooltip } from 'chart.js';
 import { useEffect, useState } from 'react';
+
 import { Pie } from 'react-chartjs-2';
 import { useUsersContext } from '../../context/usersContext';
-import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';
 import styles from './statistics.module.css';
 
 Chart.register(ArcElement, Tooltip, Legend); // Registered components
@@ -9,43 +11,49 @@ Chart.register(ArcElement, Tooltip, Legend); // Registered components
 function StatisticsPage() {
   const { usersData } = useUsersContext();
   const [chartData, setChartData] = useState({});
+  const [loading, setLoading] = useState(true); // Initialize loading state
 
   useEffect(() => {
-    const countryCounts = {};
+    if (usersData.length > 0) {
+      const countryCounts = {};
 
-    // Counts users per country
-    usersData.forEach((user) => {
-      if (user.country) {
-        countryCounts[user.country] = (countryCounts[user.country] || 0) + 1;
-      }
-    });
+      // Counts users per country
+      usersData.forEach((user) => {
+        if (user.country) {
+          countryCounts[user.country] = (countryCounts[user.country] || 0) + 1;
+        }
+      });
 
-    //Data for the pie chart
-    setChartData({
-      labels: Object.keys(countryCounts),
-      datasets: [
-        {
-          label: 'Users by Country',
-          data: Object.values(countryCounts),
-          backgroundColor: [
-            '#FF6384',
-            '#36A2EB',
-            '#FFCE56',
-            '#4BC0C0',
-            '#9966FF',
-            '#FF9F40',
-          ],
-          hoverBackgroundColor: [
-            '#FF6384',
-            '#36A2EB',
-            '#FFCE56',
-            '#4BC0C0',
-            '#9966FF',
-            '#FF9F40',
-          ],
-        },
-      ],
-    });
+      // Data for the pie chart
+      setChartData({
+        labels: Object.keys(countryCounts),
+        datasets: [
+          {
+            label: 'Users by Country',
+            data: Object.values(countryCounts),
+            backgroundColor: [
+              '#FF6384',
+              '#36A2EB',
+              '#FFCE56',
+              '#4BC0C0',
+              '#9966FF',
+              '#FF9F40',
+            ],
+            hoverBackgroundColor: [
+              '#FF6384',
+              '#36A2EB',
+              '#FFCE56',
+              '#4BC0C0',
+              '#9966FF',
+              '#FF9F40',
+            ],
+          },
+        ],
+      });
+      setLoading(false); // Set loading to false when data is available
+    } else {
+      setLoading(false); // Set loading to false if no users are available
+    }
   }, [usersData]);
 
   const options = {
@@ -64,12 +72,19 @@ function StatisticsPage() {
   return (
     <div className={styles.pageRoot}>
       <h2>User Distribution by Country</h2>
-      {chartData.labels ? (
+      {!loading && chartData.labels && chartData.labels.length > 0 ? (
         <div className={styles.chartContainer}>
           <Pie data={chartData} options={options} />
         </div>
       ) : (
-        <p>No user data available</p>
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          style={{ height: '300px' }} // Set a fixed height for the loader
+        >
+          <CircularProgress />
+        </Grid>
       )}
     </div>
   );
