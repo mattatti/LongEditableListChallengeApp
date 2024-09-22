@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { useUsersContext } from '../../context/usersContext';
-import UsersList from './usersList/UsersList';
+import ErrorPanel from '../../components/ErrorPanel';
 import PrimaryButton from '../../components/PrimaryButton';
+import { useUsersContext } from '../../context/usersContext';
 import styles from './users.module.css';
+import UsersList from './usersList/UsersList';
 
 function UsersPage() {
   const { updateUserData } = useUsersContext();
@@ -26,6 +27,11 @@ function UsersPage() {
     <div className={styles.pageRoot}>
       <div className={styles.pageContentContainer}>
         <UsersList onSave={setEditedUsers} onErrorCountChange={setErrorCounts} />
+        <ErrorPanel
+          emptyCount={errorCounts.emptyCount}
+          invalidCount={errorCounts.invalidCount}
+        />
+
         <div className={styles.rightButtonContainer}>
           <PrimaryButton handleClick={handleSave} disabled={isSaveDisabled}>
             Save

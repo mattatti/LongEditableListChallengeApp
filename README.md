@@ -99,7 +99,7 @@ You can choose any other state management solution you prefer instead of the bui
 
 ### Things to improve/implement
 
-- better response in typing
+- - better response in typing
 - add loaders and suspenses where needed
 - implement redux if needed
 - do not show error panel if there are no errors

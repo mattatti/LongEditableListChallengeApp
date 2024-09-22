@@ -1,13 +1,13 @@
-import { useState, useCallback } from 'react';
-import { Grid } from '@mui/material';
+import { Grid, TextField } from '@mui/material';
+import { useCallback, useState } from 'react';
+
+import Autocomplete from '@mui/material/Autocomplete';
+import { styled } from '@mui/material/styles';
+import debounce from 'lodash.debounce';
 import InputField from '../../../components/InputField';
 import TrashIconButton from '../../../components/TrashIconButton';
-import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
 import countryOptions from '../../../data/countries.json';
 import styles from '../users.module.css';
-import { styled } from '@mui/material/styles';
-import debounce from 'lodash.debounce'; // Import debounce
 
 const StyledAutocomplete = styled(Autocomplete)({
   boxShadow: 'none',
@@ -42,7 +42,7 @@ const UserRow = ({ user, onDelete, onChange, touchedFields }) => {
   // Debounced change handler
   const debouncedHandleFieldChange = useCallback(
     debounce((field, value) => {
-      onChange(user.id, field, value); // This will be called after 300ms of no typing
+      onChange(user.id, field, value);
     }, 300),
     []
   );
@@ -66,7 +66,6 @@ const UserRow = ({ user, onDelete, onChange, touchedFields }) => {
         break;
     }
 
-    // Trigger the debounced function
     debouncedHandleFieldChange(field, value);
   };
 

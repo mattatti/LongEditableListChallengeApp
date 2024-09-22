@@ -1,14 +1,16 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import { Typography } from '@mui/material';
+import AddButton from '../../../components/AddButton';
+import PaginationControls from '../../../components/PaginationControls';
 import { useUsersContext } from '../../../context/usersContext';
+import countryOptions from '../../../data/countries.json';
 import UserRow from '../userRow/UserRow';
 import styles from '../users.module.css';
-import { Typography, Button, Grid } from '@mui/material';
-import AddButton from '../../../components/AddButton';
-import countryOptions from '../../../data/countries.json';
 
 const USERS_PER_PAGE = 7; // Number of users to display per page
 
-function UsersList({ onSave, onErrorCountChange }) {
+function UsersList({ onErrorCountChange }) {
   const { usersData } = useUsersContext();
   const [editedUsers, setEditedUsers] = useState(usersData);
   const [touchedFields, setTouchedFields] = useState({});
@@ -83,6 +85,7 @@ function UsersList({ onSave, onErrorCountChange }) {
     <div className={styles.usersList}>
       <div className={styles.usersListHeader}>
         <Typography variant="h6">Users List ({editedUsers.length})</Typography>
+
         <AddButton
           handleClick={() =>
             setEditedUsers([
@@ -108,30 +111,11 @@ function UsersList({ onSave, onErrorCountChange }) {
         ))}
       </div>
 
-      {/* Pagination Controls */}
-      <div className={styles.paginationControls}>
-        <Button
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage((prev) => prev - 1)}
-        >
-          Previous
-        </Button>
-        <Typography variant="body2">
-          Page {currentPage} of {totalPages}
-        </Typography>
-        <Button
-          disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage((prev) => prev + 1)}
-        >
-          Next
-        </Button>
-      </div>
-
-      <div className={styles.errorCountContainer}>
-        <Typography variant="body1">
-          {`Errors: Empty Fields: ${errorCounts.emptyCount}, Invalid Fields: ${errorCounts.invalidCount}`}
-        </Typography>
-      </div>
+      <PaginationControls
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 }

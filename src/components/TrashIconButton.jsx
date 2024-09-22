@@ -1,6 +1,6 @@
-import { styled } from '@mui/material/styles';
-import { IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { IconButton } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 const StyledIconButton = styled(IconButton)({
   color: '#613f3f',
